@@ -8,8 +8,11 @@ import express, {
   Router,
 } from 'express';
 import cors from 'cors';
+import path from 'path'
 import { PORT } from './config';
 import { SampleRouter } from './routers/sample.router';
+import { UserRouter } from './routers/user.router';
+import { LaporanRouter } from './routers/laporan.router';
 
 export default class App {
   private app: Express;
@@ -25,6 +28,7 @@ export default class App {
     this.app.use(cors());
     this.app.use(json());
     this.app.use(urlencoded({ extended: true }));
+    this.app.use('/api/public', express.static(path.join(__dirname, '../public')))
   }
 
   private handleError(): void {
@@ -52,12 +56,16 @@ export default class App {
 
   private routes(): void {
     const sampleRouter = new SampleRouter();
+    const userRouter = new UserRouter();
+    const laporanRouter = new LaporanRouter()
 
     this.app.get('/api', (req: Request, res: Response) => {
-      res.send(`Hello, Purwadhika Student API!`);
+      res.send(`Hello`);
     });
 
     this.app.use('/api/samples', sampleRouter.getRouter());
+    this.app.use('/api/user', userRouter.getRouter())
+    this.app.use('/api/laporan', laporanRouter.getRouter())
   }
 
   public start(): void {

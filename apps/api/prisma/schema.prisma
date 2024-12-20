@@ -6,16 +6,48 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model Sample {
-  id        Int      @id @default(autoincrement())
-  name      String
-  code      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model JenisLaporan {
+  jenisLaporan_id   String @id @unique
+  jenisLaporan_name String @unique
+}
 
-  @@map("samples") // if you want to use snake_case format
+enum StatusLaporan {
+  PENDING
+  DISETUJI
+  DITOLAK
+}
+
+model Laporan {
+  laporan_id                 String        @unique @default(uuid())
+  laporan_nama               String
+  laporan_jumlah_penerima    Int           @default(0)
+  laporan_wilayah            String
+  laporan_tanggal_penyaluran DateTime
+  laporan_bukti_penyaluran   String
+  laporan_catatan            String
+  laporan_status             StatusLaporan
+  laporan_status_alasan      String
+  createdAt                  DateTime      @default(now())
+  updatedAt                  DateTime      @updatedAt
+  laporan_user               User          @relation(fields: [userUser_id], references: [user_id])
+  userUser_id                String
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  user_id       String   @unique @default(uuid())
+  user_role     UserRole
+  user_email    String   @unique
+  user_password String
+  createdAt     DateTime @default(now())
+
+  Laporan Laporan[]
 }
